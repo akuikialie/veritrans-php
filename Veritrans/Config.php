@@ -2,7 +2,8 @@
 /**
  * Veritrans Configuration
  */
-class Veritrans_Config {
+class Veritrans_Config
+{
 
   /**
    * Your merchant's server key
@@ -37,17 +38,17 @@ class Veritrans_Config {
    */
   public static $curlOptions = array();
 
-  const SANDBOX_BASE_URL = 'https://api.sandbox.midtrans.com/v2';
-  const PRODUCTION_BASE_URL = 'https://api.midtrans.com/v2';
-  const SNAP_SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1';
-  const SNAP_PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1';
+    const SANDBOX_BASE_URL = 'https://api.sandbox.midtrans.com/v2';
+    const PRODUCTION_BASE_URL = 'https://api.midtrans.com/v2';
+    const SNAP_SANDBOX_BASE_URL = 'https://app.sandbox.midtrans.com/snap/v1';
+    const SNAP_PRODUCTION_BASE_URL = 'https://app.midtrans.com/snap/v1';
 
   /**
    * @return string Veritrans API URL, depends on $isProduction
    */
   public static function getBaseUrl()
   {
-    return Veritrans_Config::$isProduction ?
+      return Veritrans_Config::$isProduction ?
         Veritrans_Config::PRODUCTION_BASE_URL : Veritrans_Config::SANDBOX_BASE_URL;
   }
 
@@ -56,7 +57,7 @@ class Veritrans_Config {
    */
   public static function getSnapBaseUrl()
   {
-    return Veritrans_Config::$isProduction ?
+      return Veritrans_Config::$isProduction ?
         Veritrans_Config::SNAP_PRODUCTION_BASE_URL : Veritrans_Config::SNAP_SANDBOX_BASE_URL;
   }
 }

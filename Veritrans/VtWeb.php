@@ -3,7 +3,8 @@
  * Create VtWeb transaction and return redirect url
  *
  */
-class Veritrans_VtWeb {
+class Veritrans_VtWeb
+{
 
   /**
    * Create VT-Web transaction
@@ -27,7 +28,7 @@ class Veritrans_VtWeb {
    */
   public static function getRedirectionUrl($params)
   {
-    $payloads = array(
+      $payloads = array(
       'payment_type' => 'vtweb',
       'vtweb' => array(
         // 'enabled_payments' => array('credit_card'),
@@ -35,25 +36,25 @@ class Veritrans_VtWeb {
       )
     );
 
-    if (array_key_exists('item_details', $params)) {
-      $gross_amount = 0;
-      foreach ($params['item_details'] as $item) {
-        $gross_amount += $item['quantity'] * $item['price'];
+      if (array_key_exists('item_details', $params)) {
+          $gross_amount = 0;
+          foreach ($params['item_details'] as $item) {
+              $gross_amount += $item['quantity'] * $item['price'];
+          }
+          $payloads['transaction_details']['gross_amount'] = $gross_amount;
       }
-      $payloads['transaction_details']['gross_amount'] = $gross_amount;
-    }
 
-    $payloads = array_replace_recursive($payloads, $params);
+      $payloads = array_replace_recursive($payloads, $params);
 
-    if (Veritrans_Config::$isSanitized) {
-      Veritrans_Sanitizer::jsonRequest($payloads);
-    }
+      if (Veritrans_Config::$isSanitized) {
+          Veritrans_Sanitizer::jsonRequest($payloads);
+      }
 
-    $result = Veritrans_ApiRequestor::post(
+      $result = Veritrans_ApiRequestor::post(
         Veritrans_Config::getBaseUrl() . '/charge',
         Veritrans_Config::$serverKey,
         $payloads);
 
-    return $result->redirect_url;
+      return $result->redirect_url;
   }
 }

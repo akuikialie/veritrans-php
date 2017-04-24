@@ -4,7 +4,8 @@
  * Better don't use this class directly, use Veritrans_Snap
  */
 
-class Veritrans_SnapApiRequestor {
+class Veritrans_SnapApiRequestor
+{
 
   /**
    * Send GET request
@@ -14,7 +15,7 @@ class Veritrans_SnapApiRequestor {
    */
   public static function get($url, $server_key, $data_hash)
   {
-    return self::remoteCall($url, $server_key, $data_hash, false);
+      return self::remoteCall($url, $server_key, $data_hash, false);
   }
 
   /**
@@ -25,7 +26,7 @@ class Veritrans_SnapApiRequestor {
    */
   public static function post($url, $server_key, $data_hash)
   {
-    return self::remoteCall($url, $server_key, $data_hash, true);
+      return self::remoteCall($url, $server_key, $data_hash, true);
   }
 
   /**
@@ -37,9 +38,9 @@ class Veritrans_SnapApiRequestor {
    */
   public static function remoteCall($url, $server_key, $data_hash, $post = true)
   {
-    $ch = curl_init();
+      $ch = curl_init();
 
-    $curl_options = array(
+      $curl_options = array(
       CURLOPT_URL => $url,
       CURLOPT_HTTPHEADER => array(
         'Content-Type: application/json',
@@ -52,59 +53,58 @@ class Veritrans_SnapApiRequestor {
 
     // merging with Veritrans_Config::$curlOptions
     if (count(Veritrans_Config::$curlOptions)) {
-      // We need to combine headers manually, because it's array and it will no be merged
+        // We need to combine headers manually, because it's array and it will no be merged
       if (Veritrans_Config::$curlOptions[CURLOPT_HTTPHEADER]) {
-        $mergedHeders = array_merge($curl_options[CURLOPT_HTTPHEADER], Veritrans_Config::$curlOptions[CURLOPT_HTTPHEADER]);
-        $headerOptions = array( CURLOPT_HTTPHEADER => $mergedHeders );
+          $mergedHeders = array_merge($curl_options[CURLOPT_HTTPHEADER], Veritrans_Config::$curlOptions[CURLOPT_HTTPHEADER]);
+          $headerOptions = array( CURLOPT_HTTPHEADER => $mergedHeders );
       } else {
-        $mergedHeders = array();
+          $mergedHeders = array();
       }
 
-      $curl_options = array_replace_recursive($curl_options, Veritrans_Config::$curlOptions, $headerOptions);
+        $curl_options = array_replace_recursive($curl_options, Veritrans_Config::$curlOptions, $headerOptions);
     }
 
-    if ($post) {
-      $curl_options[CURLOPT_POST] = 1;
+      if ($post) {
+          $curl_options[CURLOPT_POST] = 1;
 
-      if ($data_hash) {
-        $body = json_encode($data_hash);
-        $curl_options[CURLOPT_POSTFIELDS] = $body;
-      } else {
-        $curl_options[CURLOPT_POSTFIELDS] = '';
+          if ($data_hash) {
+              $body = json_encode($data_hash);
+              $curl_options[CURLOPT_POSTFIELDS] = $body;
+          } else {
+              $curl_options[CURLOPT_POSTFIELDS] = '';
+          }
       }
-    }
 
-    curl_setopt_array($ch, $curl_options);
+      curl_setopt_array($ch, $curl_options);
 
     // For testing purpose
     if (class_exists('VT_Tests') && VT_Tests::$stubHttp) {
-      $result = self::processStubed($curl_options, $url, $server_key, $data_hash, $post);
-      $info = VT_Tests::$stubHttpStatus;
+        $result = self::processStubed($curl_options, $url, $server_key, $data_hash, $post);
+        $info = VT_Tests::$stubHttpStatus;
     } else {
-      $result = curl_exec($ch);
-      $info = curl_getinfo($ch);
+        $result = curl_exec($ch);
+        $info = curl_getinfo($ch);
       // curl_close($ch);
     }
 
 
-    if ($result === FALSE) {
-      throw new Exception('CURL Error: ' . curl_error($ch), curl_errno($ch));
-    }
-    else {
-      $result_array = json_decode($result);
-      if ($info['http_code'] != 201) {
-        $message = 'Veritrans Error (' . $info['http_code'] . '): '
+      if ($result === false) {
+          throw new Exception('CURL Error: ' . curl_error($ch), curl_errno($ch));
+      } else {
+          $result_array = json_decode($result);
+          if ($info['http_code'] != 201) {
+              $message = 'Veritrans Error (' . $info['http_code'] . '): '
             . implode(',', $result_array->error_messages);
-        throw new Exception($message, $info['http_code']);
+              throw new Exception($message, $info['http_code']);
+          } else {
+              return $result_array;
+          }
       }
-      else {
-        return $result_array;
-      }
-    }
   }
 
-  private static function processStubed($curl, $url, $server_key, $data_hash, $post) {
-    VT_Tests::$lastHttpRequest = array(
+    private static function processStubed($curl, $url, $server_key, $data_hash, $post)
+    {
+        VT_Tests::$lastHttpRequest = array(
       "url" => $url,
       "server_key" => $server_key,
       "data_hash" => $data_hash,
@@ -112,6 +112,6 @@ class Veritrans_SnapApiRequestor {
       "curl" => $curl
     );
 
-    return VT_Tests::$stubHttpResponse;
-  }
+        return VT_Tests::$stubHttpResponse;
+    }
 }
